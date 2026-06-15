@@ -1,7 +1,7 @@
 # 🌸 cute.nvim — a Python / AI-ML Neovim config
 
 A hand-rolled, **uv-native** Neovim setup for Python and AI/ML work, wrapped in a
-**cute pink light theme** with a **Nyan-cat statusline**. Neovim 0.11+, lazy.nvim.
+**cute pink light theme** with a **Nyan-cat statusline**. Neovim 0.12+, lazy.nvim.
 
 - 🧠 **LSP** — [pyrefly](https://github.com/facebook/pyrefly) (Meta's type checker) for types & hover + [ruff](https://docs.astral.sh/ruff/) for lint / code actions / import sorting
 - 🔍 **Hover-on-idle** — rest on a symbol for 3s (or `<leader>ch`) to pop its definition in a corner window that never covers your code; `<leader>cH` toggles it
@@ -24,7 +24,8 @@ A hand-rolled, **uv-native** Neovim setup for Python and AI/ML work, wrapped in 
 
 | Tool | Why | Install (macOS) |
 |------|-----|-----------------|
-| **Neovim ≥ 0.11.7** | telescope's minimum | `brew upgrade neovim` |
+| **Neovim ≥ 0.12** | nvim-treesitter `main` branch | `brew upgrade neovim` |
+| **tree-sitter CLI** | builds TS parsers (`main` branch) | prebuilt binary → `~/.local/bin` (brew formula is library-only) |
 | **[uv](https://docs.astral.sh/uv/)** | Python env + running | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
 | **ripgrep, fd** | Telescope | `brew install ripgrep fd` |
 | **Node ≥ 22** | Copilot | `brew install node` |
@@ -127,8 +128,9 @@ brew install marksman          # LSP: link / heading / reference completion
 uv tool install pylatexenc     # `latex2text` → renders math formulas (or utftex)
 ```
 
-> Math also needs the `latex` treesitter parser — auto-installed when the
-> `tree-sitter` CLI is on PATH. Without these, math just shows as raw `$…$` source.
+> Math also needs the `latex` treesitter parser — built by the `tree-sitter` CLI
+> (required for all parsers on the `main` branch). Without these, math just shows
+> as raw `$…$` source.
 
 ## Keymaps
 

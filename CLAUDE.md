@@ -4,7 +4,7 @@ Guidance for AI assistants working in this Neovim configuration.
 
 ## What this is
 
-A hand-rolled (not a distro) Neovim 0.11+ config for **Python / AI-ML**, managed by
+A hand-rolled (not a distro) Neovim 0.12+ config for **Python / AI-ML**, managed by
 **lazy.nvim**, designed to be **uv-native**, using **GitHub Copilot** for AI, and
 themed with a bespoke **`cute`** pink-light colorscheme + a Nyan-cat statusline.
 
@@ -48,7 +48,13 @@ Plugin files: `treesitter`, `lsp`, `completion` (blink), `conform` (format),
 
 ## Pinned facts (don't "fix" these)
 
-- **treesitter is on `branch = "master"`** on purpose — `main` requires Neovim 0.12.
+- **treesitter is on `branch = "main"`** (the 0.12-compatible rewrite). The old
+  `master` branch crashes on Neovim 0.12 (its injection predicates use the pre-0.11
+  single-node match API). `main` has a different model: parsers install via
+  `require("nvim-treesitter").install{...}` into `stdpath("data")/site` (no
+  `ensure_installed`/`auto_install`), and highlighting is started per-buffer with
+  `vim.treesitter.start()` in a FileType autocmd (see `lua/plugins/treesitter.lua`).
+  Every parser is built by the `tree-sitter` CLI — it is **required**, not optional.
 - **blink.cmp is pinned `version = "1.*"`** — v2 is unreleased; keep v1.
 - **No `ANTHROPIC_API_KEY`** — AI is GitHub Copilot via `:Copilot auth`. Don't add
   Claude/CodeCompanion unless asked.
@@ -92,13 +98,18 @@ nvim --headless +"sleep 2" +"lua print(vim.g.colors_name)" +qa!
 
 - `pyrefly`, `ruff` on PATH (`uv tool install …`)
 - `marksman` (Markdown LSP) — optional; `brew install marksman` or release binary
+- **`tree-sitter` CLI on PATH — REQUIRED.** The `main` branch builds every parser
+  with it. Homebrew's `tree-sitter` formula is library-only (no CLI binary), so the
+  CLI here is the prebuilt release binary at `~/.local/bin/tree-sitter`. Without it,
+  no parser installs and `:TSUpdate` fails.
 - render-markdown LaTeX math (optional) needs BOTH the `latex` treesitter parser
-  (auto-installs only when the `tree-sitter` CLI is on PATH) AND a converter:
-  `utftex`, or `latex2text` from `uv tool install pylatexenc`. Missing either,
-  math just shows as raw `$…$` source.
+  (installed by the `tree-sitter` CLI above) AND a converter: `utftex`, or
+  `latex2text` from `uv tool install pylatexenc`. Missing the converter, math just
+  shows as raw `$…$` source.
 - molten host venv at `~/.virtualenvs/neovim` with `pynvim`+`jupyter_client`
   (until present, `:UpdateRemotePlugins` warns — expected, not a bug)
 - `debugpy` / `pytest` / `ipykernel` in each project venv (`uv add --dev …`)
-- Neovim ≥ 0.11.7 (telescope), a Nerd Font, ImageMagick, a graphics terminal
+- Neovim ≥ 0.12 (nvim-treesitter `main` branch), a Nerd Font, ImageMagick, a
+  graphics terminal
 
 See `README.md` for the full setup walkthrough.
