@@ -64,6 +64,11 @@ Plugin files: `treesitter`, `lsp`, `completion` (blink), `conform` (format),
 - **`~` toggles a bottom-split terminal** (`lua/config/keymaps.lua`), intentionally
   overriding the built-in case-toggle — `g~{motion}` still toggles case. The shell
   persists across toggles and a `TermClose` autocmd respawns it after you `exit`.
+- **Auto-hover uses a libuv timer, not `updatetime`** (`lua/plugins/lsp.lua`, augroup
+  `cute_auto_hover`): after the cursor idles 3s on a symbol it shows the hover in a
+  popup docked to the corner *opposite* the cursor, so it never covers the code.
+  Keep the timer — the global `updatetime` is 250ms, shared with other features.
+  `<leader>ch` shows it on demand, `<leader>cH` toggles it; `K` stays native hover.
 - **Cheatsheet floats lower-right** (`lua/cute/cheatsheet.lua`), not centered — so it
   doesn't cover the editing area. Keep the bottom-right docking math.
 

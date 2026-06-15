@@ -4,6 +4,7 @@ A hand-rolled, **uv-native** Neovim setup for Python and AI/ML work, wrapped in 
 **cute pink light theme** with a **Nyan-cat statusline**. Neovim 0.11+, lazy.nvim.
 
 - 🧠 **LSP** — [pyrefly](https://github.com/facebook/pyrefly) (Meta's type checker) for types & hover + [ruff](https://docs.astral.sh/ruff/) for lint / code actions / import sorting
+- 🔍 **Hover-on-idle** — rest on a symbol for 3s (or `<leader>ch`) to pop its definition in a corner window that never covers your code; `<leader>cH` toggles it
 - 🎨 **Format** — ruff via [conform.nvim](https://github.com/stevearc/conform.nvim), format-on-save
 - ⚡ **Completion** — [blink.cmp](https://github.com/saghen/blink.cmp) with GitHub Copilot in the menu
 - 🤖 **AI** — [copilot.lua](https://github.com/zbirenbaum/copilot.lua) + [CopilotChat](https://github.com/CopilotC-Nvim/CopilotChat.nvim) (browser login, **no API key**)
@@ -137,7 +138,7 @@ hints every prefix.
 | Prefix | Group | Highlights |
 |--------|-------|------------|
 | `<leader>f` | **find** | `ff` files · `fg` grep · `fb` buffers · `fr` recent · `/` in-buffer |
-| `<leader>c` | **code / lsp** | `cr` rename · `ca` action · `cf` format · `co` organize imports · `cd` diagnostics |
+| `<leader>c` | **code / lsp** | `cr` rename · `ca` action · `co` organize · `cf` format · `cd` diag · `ch`/`cH` hover popup |
 | `<leader>r` | **run / uv** | `rr` run · `ri` ipython · `rs` sync · `ra` add |
 | `<leader>t` | **test** | `tt` nearest · `tf` file · `td` debug · `ts` summary · `to` output |
 | `<leader>d` | **debug** | `db` breakpoint · `dc` continue · `du` UI · `dn` test method |

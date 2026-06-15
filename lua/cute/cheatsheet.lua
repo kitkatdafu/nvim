@@ -40,6 +40,7 @@ local sections = {
   { "▸ Code / LSP — <leader>c", {
     { "gd / gD / gy", "Definition / decl / type" },
     { "K", "Hover (pyrefly)" },
+    { "ch / cH", "Hover popup / auto-hover (3s)" },
     { "grn / grr / gra", "Rename / refs / action" },
     { "cr / ca", "Rename / code action" },
     { "cd", "Line diagnostics" },
