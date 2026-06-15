@@ -13,8 +13,16 @@ return {
   ---@module 'blink.cmp'
   ---@type blink.cmp.Config
   opts = {
-    -- 'default' = C-y accept, C-space menu/docs, C-n/C-p select, Tab snippet jump.
-    keymap = { preset = "default" },
+    -- Based on 'default' (C-space menu/docs, C-n/C-p or Up/Down to navigate,
+    -- C-e hide, C-k signature), but Tab AND Enter accept the highlighted item.
+    -- When the menu is closed they fall back to a literal tab / newline (and Tab
+    -- still jumps snippet placeholders).
+    keymap = {
+      preset = "default",
+      ["<CR>"] = { "accept", "fallback" },
+      ["<Tab>"] = { "accept", "snippet_forward", "fallback" },
+      ["<S-Tab>"] = { "snippet_backward", "fallback" },
+    },
     appearance = {
       nerd_font_variant = "mono",
       kind_icons = { Copilot = "" },
