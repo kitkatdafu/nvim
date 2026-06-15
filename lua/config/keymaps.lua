@@ -9,6 +9,14 @@ map("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Clear search highlight" })
 -- jk exits insert mode (type the two keys quickly)
 map("i", "jk", "<Esc>", { desc = "Exit insert mode" })
 
+-- Cheatsheet of this config's keymaps (<F1> or :Cheatsheet)
+map("n", "<F1>", function()
+  require("cute.cheatsheet").toggle()
+end, { desc = "Toggle cheatsheet" })
+vim.api.nvim_create_user_command("Cheatsheet", function()
+  require("cute.cheatsheet").toggle()
+end, { desc = "Toggle keymap cheatsheet" })
+
 -- Window navigation
 map("n", "<C-h>", "<C-w>h", { desc = "Go to left window" })
 map("n", "<C-j>", "<C-w>j", { desc = "Go to lower window" })
