@@ -1,0 +1,19 @@
+# ── OS / editor junk ────────────────────────────────────────────────────────
+.DS_Store
+*.swp
+*.swo
+*~
+tags
+.netrwhist
+
+# ── Local / machine-specific / secret overrides (not for the repo) ───────────
+# Create lua/config/local.lua for per-machine tweaks and it stays out of git.
+lua/config/local.lua
+*.local.lua
+
+# ── Lua build artifacts ─────────────────────────────────────────────────────
+luac.out
+*.luac
+
+# NOTE: lazy-lock.json is intentionally NOT ignored — commit it so plugin
+# versions are reproducible across machines.
