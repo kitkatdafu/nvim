@@ -6,6 +6,9 @@ local map = vim.keymap.set
 -- Clear search highlight
 map("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Clear search highlight" })
 
+-- jk exits insert mode (type the two keys quickly)
+map("i", "jk", "<Esc>", { desc = "Exit insert mode" })
+
 -- Window navigation
 map("n", "<C-h>", "<C-w>h", { desc = "Go to left window" })
 map("n", "<C-j>", "<C-w>j", { desc = "Go to lower window" })
