@@ -65,6 +65,19 @@ return {
       vim.lsp.enable("lua_ls")
     end
 
+    -- 4b. marksman — Markdown LSP: completion for links, headings, references and
+    --     wiki-links. Only if installed (`brew install marksman` or the release
+    --     binary). Completion rides blink.cmp (capabilities set above); hover /
+    --     goto are wired by the LspAttach maps below (K, gd) like any server.
+    if vim.fn.executable("marksman") == 1 then
+      vim.lsp.config("marksman", {
+        cmd = { "marksman", "server" },
+        filetypes = { "markdown", "markdown.mdx" },
+        root_markers = { ".marksman.toml", ".git" },
+      })
+      vim.lsp.enable("marksman")
+    end
+
     -- 5. On attach: split ruff/pyrefly responsibilities + buffer-local keymaps.
     vim.api.nvim_create_autocmd("LspAttach", {
       group = vim.api.nvim_create_augroup("cute_lsp_attach", { clear = true }),

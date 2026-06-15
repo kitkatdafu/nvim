@@ -25,7 +25,8 @@ lua/plugins/*.lua           one concern per file, auto-imported by lazy
 
 Plugin files: `treesitter`, `lsp`, `completion` (blink), `conform` (format),
 `copilot` (engine + chat), `datascience` (molten/jupyter), `dap`, `neotest`,
-`telescope`, `oil`, `lualine`, `gitsigns`, `which-key`, `editor`, `trouble`.
+`telescope`, `oil`, `lualine`, `gitsigns`, `which-key`, `editor`, `trouble`,
+`markdown` (render-markdown + vim-table-mode).
 
 ## Conventions — follow these
 
@@ -40,7 +41,8 @@ Plugin files: `treesitter`, `lsp`, `completion` (blink), `conform` (format),
 - **Diagnostics API:** use `vim.diagnostic.jump({count=…})`, not the deprecated
   `goto_next/goto_prev`. Use `vim.hl.on_yank`, not `vim.highlight.on_yank`.
 - **Leader namespaces:** `f`=find, `c`=code/lsp, `r`=run/uv, `t`=test, `d`=debug,
-  `a`=AI, `h`=git, `x`=diagnostics. `<localleader>` (`\`) = Jupyter/molten.
+  `a`=AI, `h`=git, `x`=diagnostics, `w`=window/splits, `m`=markdown,
+  `<Tab>`=tabs. `<localleader>` (`\`) = Jupyter/molten.
   Register new groups in `lua/plugins/which-key.lua`.
 - **Style:** `.stylua.toml` governs Lua formatting (2-space indent). Match it.
 
@@ -59,6 +61,11 @@ Plugin files: `treesitter`, `lsp`, `completion` (blink), `conform` (format),
 - **nyan statusline** uses `lua/cute/nyan.lua` (capped width); the real
   `nyan-modoki.vim` is installed but its full-width `g:NyanModoki()` is not used in
   lualine on purpose (it sizes to winwidth/2).
+- **`~` toggles a bottom-split terminal** (`lua/config/keymaps.lua`), intentionally
+  overriding the built-in case-toggle — `g~{motion}` still toggles case. The shell
+  persists across toggles and a `TermClose` autocmd respawns it after you `exit`.
+- **Cheatsheet floats lower-right** (`lua/cute/cheatsheet.lua`), not centered — so it
+  doesn't cover the editing area. Keep the bottom-right docking math.
 
 ## Validate after changes
 
@@ -79,6 +86,11 @@ nvim --headless +"sleep 2" +"lua print(vim.g.colors_name)" +qa!
 ## Known external dependencies (user-installed, not in repo)
 
 - `pyrefly`, `ruff` on PATH (`uv tool install …`)
+- `marksman` (Markdown LSP) — optional; `brew install marksman` or release binary
+- render-markdown LaTeX math (optional) needs BOTH the `latex` treesitter parser
+  (auto-installs only when the `tree-sitter` CLI is on PATH) AND a converter:
+  `utftex`, or `latex2text` from `uv tool install pylatexenc`. Missing either,
+  math just shows as raw `$…$` source.
 - molten host venv at `~/.virtualenvs/neovim` with `pynvim`+`jupyter_client`
   (until present, `:UpdateRemotePlugins` warns — expected, not a bug)
 - `debugpy` / `pytest` / `ipykernel` in each project venv (`uv add --dev …`)

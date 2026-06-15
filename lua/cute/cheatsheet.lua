@@ -13,9 +13,18 @@ local sections = {
     { "<F1>", "Toggle this cheatsheet" },
     { "<leader>?", "Buffer-local keys (which-key)" },
     { "-", "File explorer (oil)" },
-    { "<C-hjkl>", "Move between windows" },
     { "gcc / gc", "Comment line / motion" },
     { "<leader>p", "Paste without yanking" },
+  } },
+  { "▸ Windows · Tabs · Term", {
+    { "<C-hjkl>", "Move between windows" },
+    { "<leader>wv / ws", "Split vert / horizontal" },
+    { "<leader>wc / wo", "Close / only window" },
+    { "<leader><Tab>n", "New tab" },
+    { "<leader><Tab>][", "Next / prev tab" },
+    { "gt / gT", "Switch tab (built-in)" },
+    { "~", "Toggle terminal (Shift+`)" },
+    { "<Esc><Esc>", "Exit terminal mode" },
   } },
   { "▸ Find — <leader>f", {
     { "ff / <Space>", "Find files" },
@@ -90,6 +99,12 @@ local sections = {
     { "\\oh / \\os", "Hide / enter output" },
     { "\\oi", "Image popup" },
     { "[x / ]x", "Prev / next cell" },
+  } },
+  { "▸ Markdown — <leader>m", {
+    { "mr", "Toggle live render" },
+    { "mt / mT", "Table mode / tableize" },
+    { "$x$ / $$x$$", "Inline / block math" },
+    { "K / gd", "Hover / goto (marksman)" },
   } },
   { "▸ Completion (blink)", {
     { "<Tab> / <CR>", "Accept selection" },
@@ -182,15 +197,16 @@ function M.open()
   vim.bo[buf].buftype = "nofile"
   vim.bo[buf].bufhidden = "wipe"
 
-  -- Float window, centered.
+  -- Float window, docked to the lower-right corner.
   local width = math.min((two and (1 + maxw + GAP + maxw) or (1 + maxw)) + 1, vim.o.columns - 2)
   local height = math.min(rows, vim.o.lines - 6)
   local win = vim.api.nvim_open_win(buf, true, {
     relative = "editor",
     width = width,
     height = height,
-    row = math.floor((vim.o.lines - height) / 2 - 1),
-    col = math.floor((vim.o.columns - width) / 2),
+    -- Dock to the lower-right corner so the editing area on the left stays clear.
+    row = math.max(0, vim.o.lines - height - 4),
+    col = math.max(0, vim.o.columns - width - 2),
     style = "minimal",
     border = "rounded",
     title = " 🌸 cute.nvim cheatsheet ",

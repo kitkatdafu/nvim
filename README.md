@@ -9,6 +9,8 @@ A hand-rolled, **uv-native** Neovim setup for Python and AI/ML work, wrapped in 
 - 🤖 **AI** — [copilot.lua](https://github.com/zbirenbaum/copilot.lua) + [CopilotChat](https://github.com/CopilotC-Nvim/CopilotChat.nvim) (browser login, **no API key**)
 - 📓 **Jupyter / data science** — [molten](https://github.com/benlubas/molten-nvim) + [jupytext](https://github.com/GCBallesteros/jupytext.nvim) + [image.nvim](https://github.com/3rd/image.nvim) (inline plots)
 - 🐞 **Debug / test** — nvim-dap + dap-python + [neotest](https://github.com/nvim-neotest/neotest) (pytest), all on the uv venv
+- 📝 **Markdown** — [render-markdown](https://github.com/MeanderingProgrammer/render-markdown.nvim) live rendering (tables, callouts, **LaTeX math**), [vim-table-mode](https://github.com/dhruvasagar/vim-table-mode) auto-tables, [marksman](https://github.com/artempyanykh/marksman) LSP
+- 🪟 **Windows · tabs · terminal** — quick splits (`<leader>w`), tabs (`<leader><Tab>`), and a toggleable bottom-split terminal on `~`
 - 🌳 Treesitter, Telescope, oil, gitsigns, which-key, trouble, todo-comments, mini.\*
 - 📦 **uv everywhere** — every Python tool targets the project's `.venv` automatically
 
@@ -28,6 +30,8 @@ A hand-rolled, **uv-native** Neovim setup for Python and AI/ML work, wrapped in 
 | **A Nerd Font** | icons | `brew install --cask font-jetbrains-mono-nerd-font` |
 | **ImageMagick** | inline images | `brew install imagemagick` |
 | **Graphics terminal** | inline plots | `brew install --cask ghostty` (or kitty) |
+| **marksman** *(optional)* | Markdown LSP (links/headings) | `brew install marksman` |
+| **pylatexenc** / utftex *(optional)* | render-markdown math | `uv tool install pylatexenc` |
 
 > **Inline images** (notebook plots) need a terminal speaking the **kitty graphics
 > protocol** — Ghostty or kitty (WezTerm needs the `sixel` backend). In
@@ -42,6 +46,10 @@ git clone <your-repo-url> ~/.config/nvim
 # Python language tools (uv puts them on PATH)
 uv tool install pyrefly
 uv tool install ruff
+
+# Optional: richer Markdown (LSP completion + math rendering)
+brew install marksman              # link / heading / reference completion
+uv tool install pylatexenc         # `latex2text` → renders LaTeX math (or utftex)
 
 # First launch installs all plugins, then:
 nvim
@@ -100,6 +108,27 @@ Then in Neovim: `:UpdateRemotePlugins` (once), restart, open a `.py`/`.ipynb`,
 `<localleader>rl`. `.ipynb` files open as `# %%`-delimited Python (full LSP) via
 jupytext, and saved cell outputs round-trip.
 
+## Markdown
+
+Open any `.md` and it renders in-buffer — headings, lists, code blocks, tables,
+callouts, and **LaTeX math** (`$…$` / `$$…$$`). Prose soft-wraps with spell-check on.
+
+| Key | Action |
+|-----|--------|
+| `<leader>mr` | Toggle live rendering (render-markdown) |
+| `<leader>mt` | Toggle table mode — then typing a pipe auto-builds & aligns tables |
+| `<leader>mT` | Tableize a visual selection (CSV/TSV → table) |
+
+Two **optional** installs unlock the extras (everything else works without them):
+
+```sh
+brew install marksman          # LSP: link / heading / reference completion
+uv tool install pylatexenc     # `latex2text` → renders math formulas (or utftex)
+```
+
+> Math also needs the `latex` treesitter parser — auto-installed when the
+> `tree-sitter` CLI is on PATH. Without these, math just shows as raw `$…$` source.
+
 ## Keymaps
 
 Leader = `Space`, localleader = `\`. `<leader>?` shows buffer-local maps; which-key
@@ -115,6 +144,10 @@ hints every prefix.
 | `<leader>a` | **AI (copilot)** | `aa` chat · `am` models · `ap` prompts · `aq` quick · (visual) `ae`/`af`/`at`/`ar` |
 | `<leader>h` | **git hunk** | `hs` stage · `hr` reset · `hp` preview · `hb` blame · `]c`/`[c` nav |
 | `<leader>x` | **diagnostics** | `xx` Trouble · `xX` buffer · `]d`/`[d` jump |
+| `<leader>w` | **window** | `wv` split-v · `ws` split-h · `wc` close · `wo` only |
+| `<leader><Tab>` | **tabs** | `n` new · `c` close · `]`/`[` next/prev · `o` only |
+| `<leader>m` | **markdown** | `mr` render · `mt` table-mode · `mT` tableize |
+| `~` | **terminal** | toggle a bottom-split shell — persists, respawns after `exit` |
 | `<localleader>` | **Jupyter** | `mi` init · `e` eval-op · `rl` line · `rr` re-eval · `os` output · `]x`/`[x` cells |
 | `gd` `K` `grn` `gra` | **LSP** | definition · hover · rename · code action (0.11 defaults) |
 | `-` | oil | edit the filesystem as a buffer |

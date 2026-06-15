@@ -40,6 +40,17 @@ autocmd("BufReadPost", {
   end,
 })
 
+-- Markdown: soft-wrap prose at word boundaries + spell-check.
+autocmd("FileType", {
+  group = augroup("markdown_prose", { clear = true }),
+  pattern = { "markdown", "markdown.mdx" },
+  callback = function()
+    vim.opt_local.wrap = true
+    vim.opt_local.linebreak = true -- break on words, not mid-word
+    vim.opt_local.spell = true
+  end,
+})
+
 -- Close noisy/utility buffers with `q`.
 autocmd("FileType", {
   group = augroup("close_with_q", { clear = true }),

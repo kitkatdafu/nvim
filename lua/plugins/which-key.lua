@@ -10,9 +10,12 @@ return {
       { "<leader>d", group = "debug" },
       { "<leader>f", group = "find" },
       { "<leader>h", group = "git hunk" },
+      { "<leader>m", group = "markdown" },
       { "<leader>r", group = "run / uv" },
       { "<leader>t", group = "test" },
+      { "<leader>w", group = "window" },
       { "<leader>x", group = "diagnostics / trouble" },
+      { "<leader><tab>", group = "tabs" },
     },
   },
   keys = {
