@@ -26,7 +26,7 @@ lua/plugins/*.lua           one concern per file, auto-imported by lazy
 Plugin files: `treesitter`, `lsp`, `completion` (blink), `conform` (format),
 `copilot` (engine + chat), `datascience` (molten/jupyter), `dap`, `neotest`,
 `telescope`, `oil`, `lualine`, `gitsigns`, `which-key`, `editor`, `trouble`,
-`markdown` (render-markdown + vim-table-mode).
+`markdown` (render-markdown + vim-table-mode), `snacks` (image-based LaTeX math).
 
 ## Conventions — follow these
 
@@ -77,6 +77,15 @@ Plugin files: `treesitter`, `lsp`, `completion` (blink), `conform` (format),
   `<leader>ch` shows it on demand, `<leader>cH` toggles it; `K` stays native hover.
 - **Cheatsheet floats lower-right** (`lua/cute/cheatsheet.lua`), not centered — so it
   doesn't cover the editing area. Keep the bottom-right docking math.
+- **Math is image-based, not text** (`lua/plugins/snacks.lua`). snacks.image compiles
+  each `$…$` / `$$…$$` to a PNG (`pdflatex` → ImageMagick) and shows it inline via the
+  kitty graphics protocol. It finds math through the `latex` tree injected into markdown
+  (`queries/latex/images.scm` runs on the injected tree), so **no custom query is
+  needed**. Because of this, render-markdown's `latex` is intentionally OFF and
+  image.nvim's `integrations.markdown` is OFF (image.nvim stays only as molten's
+  provider) — exactly one library owns markdown math/images. snacks is
+  `lazy=false, priority=1000` (per its own health check). To switch to text math: flip
+  `latex.enabled=true` in `markdown.lua` and `image.math.enabled=false` in `snacks.lua`.
 
 ## Validate after changes
 
@@ -98,14 +107,17 @@ nvim --headless +"sleep 2" +"lua print(vim.g.colors_name)" +qa!
 
 - `pyrefly`, `ruff` on PATH (`uv tool install …`)
 - `marksman` (Markdown LSP) — optional; `brew install marksman` or release binary
-- **`tree-sitter` CLI on PATH — REQUIRED.** The `main` branch builds every parser
-  with it. Homebrew's `tree-sitter` formula is library-only (no CLI binary), so the
-  CLI here is the prebuilt release binary at `~/.local/bin/tree-sitter`. Without it,
-  no parser installs and `:TSUpdate` fails.
-- render-markdown LaTeX math (optional) needs BOTH the `latex` treesitter parser
-  (installed by the `tree-sitter` CLI above) AND a converter: `utftex`, or
-  `latex2text` from `uv tool install pylatexenc`. Missing the converter, math just
-  shows as raw `$…$` source.
+- **`tree-sitter` CLI on PATH — REQUIRED** (≥ 0.26.1). The `main` branch builds every
+  parser with it. Homebrew's plain `tree-sitter` formula is library-only (no CLI), so
+  install the CLI via `brew install tree-sitter-cli` **or** the prebuilt release binary
+  at `~/.local/bin/tree-sitter` (currently v0.26.11). Without it, no parser installs
+  and `:TSUpdate` fails.
+- **LaTeX math is image-based by default** (snacks.image): needs a kitty-graphics
+  terminal (Ghostty/kitty), ImageMagick (`magick`), a LaTeX compiler (`pdflatex`, or
+  `tectonic` if present), and the `latex` treesitter parser. render-markdown's own text
+  math is OFF (see the pinned fact + toggle). Text fallback (any terminal) uses `utftex`
+  (`brew install utftex`, or build libtexprintf into `~/.local/bin` if brew is broken)
+  then `latex2text` (`uv tool install pylatexenc`). With no renderer, math shows raw `$…$`.
 - molten host venv at `~/.virtualenvs/neovim` with `pynvim`+`jupyter_client`
   (until present, `:UpdateRemotePlugins` warns — expected, not a bug)
 - `debugpy` / `pytest` / `ipykernel` in each project venv (`uv add --dev …`)

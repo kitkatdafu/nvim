@@ -20,7 +20,10 @@ return {
     opts = {
       backend = "kitty", -- Ghostty / kitty (WezTerm: use "sixel")
       processor = "magick_cli", -- shells out to ImageMagick (brew install imagemagick)
-      integrations = { markdown = { enabled = true } },
+      -- Markdown images + math are owned by snacks.image (lua/plugins/snacks.lua);
+      -- keep image.nvim solely as molten's provider so two libraries don't both
+      -- drive kitty graphics on the same markdown buffer.
+      integrations = { markdown = { enabled = false } },
       max_width = 100,
       max_height = 12,
       max_height_window_percentage = math.huge,

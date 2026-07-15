@@ -25,15 +25,16 @@ A hand-rolled, **uv-native** Neovim setup for Python and AI/ML work, wrapped in 
 | Tool | Why | Install (macOS) |
 |------|-----|-----------------|
 | **Neovim ≥ 0.12** | nvim-treesitter `main` branch | `brew upgrade neovim` |
-| **tree-sitter CLI** | builds TS parsers (`main` branch) | prebuilt binary → `~/.local/bin` (brew formula is library-only) |
+| **tree-sitter CLI** ≥ 0.26.1 | builds TS parsers (`main` branch) | `brew install tree-sitter-cli` (plain `tree-sitter` formula is library-only) — or prebuilt binary → `~/.local/bin` |
 | **[uv](https://docs.astral.sh/uv/)** | Python env + running | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
 | **ripgrep, fd** | Telescope | `brew install ripgrep fd` |
 | **Node ≥ 22** | Copilot | `brew install node` |
 | **A Nerd Font** | icons | `brew install --cask font-jetbrains-mono-nerd-font` |
-| **ImageMagick** | inline images | `brew install imagemagick` |
-| **Graphics terminal** | inline plots | `brew install --cask ghostty` (or kitty) |
+| **ImageMagick** | inline images + math | `brew install imagemagick` |
+| **Graphics terminal** | inline plots + **math images** | `brew install --cask ghostty` (or kitty) |
+| **LaTeX** (`pdflatex`) | typeset math images | [MacTeX](https://tug.org/mactex/) / BasicTeX, or `brew install --cask mactex-no-gui` |
 | **marksman** *(optional)* | Markdown LSP (links/headings) | `brew install marksman` |
-| **pylatexenc** / utftex *(optional)* | render-markdown math | `uv tool install pylatexenc` |
+| **utftex** / pylatexenc *(optional)* | text-math fallback (non-graphics terminals) | `brew install utftex` (2D) or `uv tool install pylatexenc` (`latex2text`) |
 
 > **Inline images** (notebook plots) need a terminal speaking the **kitty graphics
 > protocol** — Ghostty or kitty (WezTerm needs the `sixel` backend). In
@@ -115,22 +116,33 @@ jupytext, and saved cell outputs round-trip.
 Open any `.md` and it renders in-buffer — headings, lists, code blocks, tables,
 callouts, and **LaTeX math** (`$…$` / `$$…$$`). Prose soft-wraps with spell-check on.
 
+**Math renders as real typeset images** via [snacks.image](https://github.com/folke/snacks.nvim):
+each formula is compiled with `pdflatex` and shown inline through the kitty graphics
+protocol — so it needs a graphics terminal (Ghostty/kitty) + ImageMagick + a LaTeX
+compiler. render-markdown handles everything else (headings, tables, callouts …).
+
 | Key | Action |
 |-----|--------|
 | `<leader>mr` | Toggle live rendering (render-markdown) |
 | `<leader>mt` | Toggle table mode — then typing a pipe auto-builds & aligns tables |
 | `<leader>mT` | Tableize a visual selection (CSV/TSV → table) |
 
-Two **optional** installs unlock the extras (everything else works without them):
+Optional installs unlock the extras (everything else works without them):
 
 ```sh
 brew install marksman          # LSP: link / heading / reference completion
-uv tool install pylatexenc     # `latex2text` → renders math formulas (or utftex)
+brew install utftex            # text-math fallback: 2D fraction bars, matrices, ∫/∑/√
+uv tool install pylatexenc     # `latex2text` — flat text-math fallback
 ```
 
-> Math also needs the `latex` treesitter parser — built by the `tree-sitter` CLI
-> (required for all parsers on the `main` branch). Without these, math just shows
-> as raw `$…$` source.
+> **Image math** (the default) needs a kitty-graphics terminal, `magick`, and a LaTeX
+> compiler (`pdflatex`/`tectonic`) — all driven by snacks.image, which conceals the
+> source and shows the rendered formula inline. **Prefer text math** instead (any
+> terminal, no images)? Set `latex = { enabled = true }` in `lua/plugins/markdown.lua`
+> and `image = { math = { enabled = false } }` in `lua/plugins/snacks.lua`; text
+> converters are tried in order — `utftex` (nice 2D) then `latex2text`. Either path
+> needs the `latex` treesitter parser (built by the `tree-sitter` CLI). With no
+> renderer at all, math shows as raw `$…$` source.
 
 ## Keymaps
 
