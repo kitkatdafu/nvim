@@ -1,6 +1,9 @@
--- Debugging — nvim-dap + dap-python (debugpy), with a UI and inline values.
--- uv: the debuggee runs under the project's `.venv` python, so install debugpy
--- there:  uv add --dev debugpy   (see README → "Debugging").
+-- Debugging — nvim-dap with a UI and inline values.
+--   • Python: dap-python (debugpy) under the project's uv `.venv`, so install it
+--     there:  uv add --dev debugpy   (see README → "Debugging").
+--   • C/C++:  lldb-dap, which the Xcode Command Line Tools already ship (there
+--     is no gdb on macOS arm64 and no codesigning/"developer mode" step needed).
+--     <leader>dR builds the current file/target with -g and launches it.
 return {
   "mfussenegger/nvim-dap",
   dependencies = {
@@ -42,6 +45,40 @@ return {
     require("dap-python").setup(py.python())
     require("dap-python").resolve_python = function()
       return py.python()
+    end
+
+    -- C/C++ via lldb-dap. A plain stdio ("executable") adapter: the Command Line
+    -- Tools' lldb-dap has no --port flag, so the copy-pasteable `type = "server"`
+    -- recipes found online cannot work here.
+    local lldb = require("config.cc").lldb_dap()
+    if lldb then
+      dap.adapters.lldb = { type = "executable", command = lldb, name = "lldb" }
+      local launch = {
+        {
+          name = "Launch (lldb)",
+          type = "lldb",
+          request = "launch",
+          program = function()
+            return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+          end,
+          args = {},
+          cwd = "${workspaceFolder}",
+          env = {},
+          stopOnEntry = false,
+          -- Must stay false: the runInTerminal launcher *is* the Apple-signed
+          -- lldb-dap binary, which macOS will not let the adapter attach to.
+          -- The debuggee's stdout still arrives in the dap REPL (<leader>dr);
+          -- the trade-off is that it gets no interactive stdin.
+          runInTerminal = false,
+        },
+      }
+      dap.configurations.c = launch
+      dap.configurations.cpp = launch
+      dap.configurations.objc = launch
+      dap.configurations.objcpp = launch
+      -- Breakpoints need DWARF, which macOS keeps *outside* the executable in a
+      -- sibling .dSYM (one-step `clang++ -g` builds one automatically) or in the
+      -- original .o files. Delete either and breakpoints silently never bind.
     end
 
     -- Auto open/close the UI around sessions.

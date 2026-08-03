@@ -207,6 +207,13 @@ function M.load()
     ["@type.builtin"] = { fg = p.type }, -- int / str / list
     ["@type.definition"] = { fg = p.type },
     ["@type.qualifier"] = { fg = p.keyword },
+    -- C / C++ (captures the c / cpp / doxygen queries use)
+    ["@keyword.modifier"] = { fg = p.keyword }, -- const / static / constexpr / virtual
+    ["@keyword.type"] = { fg = p.keyword }, -- struct / class / enum / union
+    ["@keyword.directive.define"] = { fg = p.keyword }, -- #define
+    ["@keyword.conditional.ternary"] = { fg = p.operator }, -- ? :
+    ["@string.special.path"] = { fg = p.string }, -- #include <vector>
+    ["@string.special.symbol"] = { fg = p.constant },
     ["@attribute"] = { fg = p.func }, -- @decorator
     ["@attribute.builtin"] = { fg = p.func },
     ["@module"] = { fg = p.type }, -- import module names
@@ -250,6 +257,18 @@ function M.load()
     ["@lsp.type.keyword"] = { fg = p.keyword },
     ["@lsp.type.string"] = { fg = p.string },
     ["@lsp.type.number"] = { fg = p.number },
+    -- clangd's own semantic tokens
+    ["@lsp.type.macro"] = { fg = p.constant },
+    ["@lsp.type.concept"] = { fg = p.type },
+    ["@lsp.type.typeParameter"] = { fg = p.type },
+    ["@lsp.type.struct"] = { fg = p.type },
+    ["@lsp.type.modifier"] = { fg = p.keyword },
+    -- left empty on purpose: let treesitter keep owning punctuation + comments,
+    -- which clangd would otherwise repaint through its semantic tokens.
+    ["@lsp.type.bracket"] = {},
+    ["@lsp.type.operator"] = {},
+    ["@lsp.type.comment"] = {},
+    ["@lsp.type.unknown"] = {},
     ["@lsp.typemod.variable.readonly"] = { fg = p.constant },
     ["@lsp.typemod.variable.global"] = { fg = p.variable },
     ["@lsp.typemod.function.builtin"] = { fg = p.func },

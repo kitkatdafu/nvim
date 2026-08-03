@@ -1,6 +1,7 @@
 -- ============================================================================
--- Neovim config — Python / AI-ML, uv-native, with GitHub Copilot
+-- Neovim config — Python / AI-ML (uv-native) + C/C++, with GitHub Copilot
 --   • LSP: pyrefly (types) + ruff (lint/format/imports)   • Completion: blink.cmp
+--   • C/C++: clangd + clang-format + lldb-dap, <leader>r builds & runs
 --   • Jupyter: molten + jupytext + image.nvim             • Debug/Test: dap + neotest
 --   • Theme: "cute" (pink light port) + nyan-cat statusline
 -- Entry point: sets leaders, loads config/, bootstraps lazy.nvim, applies theme.
@@ -24,6 +25,7 @@ require("config.options")
 require("config.keymaps")
 require("config.autocmds")
 require("config.python") -- uv venv resolver + run/REPL keymaps
+require("config.cc") -- C/C++ toolchain: build/run/debug keymaps + filetypes
 
 -- Bootstrap lazy.nvim (official snippet, stable branch).
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"

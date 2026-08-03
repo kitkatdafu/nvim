@@ -11,7 +11,7 @@ return {
       { "<leader>f", group = "find" },
       { "<leader>h", group = "git hunk" },
       { "<leader>m", group = "markdown" },
-      { "<leader>r", group = "run / uv" },
+      { "<leader>r", group = "run / build (uv · cc)" },
       { "<leader>t", group = "test" },
       { "<leader>w", group = "window" },
       { "<leader>x", group = "diagnostics / trouble" },

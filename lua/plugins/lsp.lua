@@ -6,7 +6,8 @@
 --
 -- uv: both servers auto-detect the project's `.venv` at the uv project root.
 -- Launch nvim from inside the project (so `.venv` is found) and run
--- `:LspRestart` after creating/switching the venv (e.g. after `uv sync`).
+-- `:lsp restart` after creating/switching the venv (e.g. after `uv sync`).
+--   (Neovim 0.12 replaced nvim-lspconfig's :LspRestart with the built-in :lsp.)
 -- ============================================================================
 return {
   "neovim/nvim-lspconfig",
@@ -49,6 +50,50 @@ return {
     })
 
     vim.lsp.enable({ "pyrefly", "ruff" })
+
+    -- 3b. clangd — C/C++ types, completion, navigation, and clang-tidy run
+    --     in-process (the standalone clang-tidy binary is not needed). Its argv
+    --     lives in config/cc.lua with the rest of the C/C++ toolchain.
+    --
+    --     nvim-lspconfig ships an `lsp/clangd.lua`, and vim.lsp.config MERGES
+    --     over it: list keys (cmd, filetypes) are replaced wholesale, but its
+    --     on_attach — which creates :LspClangdSwitchSourceHeader and
+    --     :LspClangdShowSymbolInfo — is only kept because nothing here defines
+    --     one (a local on_attach would silently overwrite it). Buffer keymaps go
+    --     in the LspAttach autocmd below, like every other server.
+    --
+    --     Two configs, one per language: `fallbackFlags` is what lets a *bare*
+    --     .cpp file (no CMake, no compile_commands.json) know it is C++23 —
+    --     Apple clang defaults to gnu++14, so std::format/span/ranges would all
+    --     be flagged as errors. But clangd rejects a C++ -std outright on a .c
+    --     file ("invalid argument '-std=c++23' not allowed with 'C'"), and
+    --     init_options are per-server, so C gets its own (its default, gnu17, is
+    --     already fine). Mixed C/C++ trees run two clangd instances; anything
+    --     with a compile_commands.json ignores fallbackFlags entirely.
+    if vim.fn.executable("clangd") == 1 then
+      local cc = require("config.cc")
+      local shipped = vim.deepcopy(vim.lsp.config["clangd"])
+
+      vim.lsp.config("clangd", {
+        cmd = cc.clangd_cmd(),
+        filetypes = { "cpp", "objcpp", "cuda" },
+        init_options = { fallbackFlags = { "-std=" .. cc.settings.std.cpp } },
+      })
+      vim.lsp.config(
+        "clangd_c",
+        vim.tbl_deep_extend("force", shipped, {
+          cmd = cc.clangd_cmd(),
+          filetypes = { "c", "objc" },
+        })
+      )
+      vim.lsp.enable({ "clangd", "clangd_c" })
+    end
+
+    -- 3c. cmake-language-server for CMakeLists.txt, if it's installed
+    --     (`uv tool install cmake-language-server`).
+    if vim.fn.executable("cmake-language-server") == 1 then
+      vim.lsp.enable("cmake")
+    end
 
     -- 4. lua_ls for editing this config — only if it's installed.
     if vim.fn.executable("lua-language-server") == 1 then
@@ -185,11 +230,23 @@ return {
         local function map(mode, lhs, rhs, desc)
           vim.keymap.set(mode, lhs, rhs, { buffer = buf, desc = desc })
         end
+
+        if client and vim.startswith(client.name, "clangd") then
+          -- Parameter names and deduced types are most of clangd's value in C++.
+          if client:supports_method("textDocument/inlayHint") then
+            vim.lsp.inlay_hint.enable(true, { bufnr = buf })
+          end
+          -- Jump between foo.cpp and foo.h (a clangd protocol extension;
+          -- nvim-lspconfig wires the command, this binds it).
+          map("n", "<leader>cS", "<cmd>LspClangdSwitchSourceHeader<cr>", "Switch source/header")
+          map("n", "<M-o>", "<cmd>LspClangdSwitchSourceHeader<cr>", "Switch source/header")
+          map("n", "<leader>cy", "<cmd>LspClangdShowSymbolInfo<cr>", "Symbol info (clangd)")
+        end
         -- Navigation (gr*, K are nvim 0.11 defaults; these add the rest).
         map("n", "gd", vim.lsp.buf.definition, "Goto definition")
         map("n", "gD", vim.lsp.buf.declaration, "Goto declaration")
         map("n", "gy", vim.lsp.buf.type_definition, "Goto type definition")
-        map("n", "K", vim.lsp.buf.hover, "Hover (pyrefly)")
+        map("n", "K", vim.lsp.buf.hover, "Hover")
         -- Code actions live under <leader>c.
         map("n", "<leader>cr", vim.lsp.buf.rename, "Rename symbol")
         map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, "Code action")
